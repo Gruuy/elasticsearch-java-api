@@ -26,4 +26,6 @@ public interface TestService {
     List<Test2Index> getIndex();
 
     String update();
+
+    String delete();
 }

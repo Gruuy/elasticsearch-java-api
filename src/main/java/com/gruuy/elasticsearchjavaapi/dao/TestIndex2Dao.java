@@ -22,4 +22,6 @@ public interface TestIndex2Dao {
     List<Test2Index> getIndex();
 
     String update();
+
+    String delete();
 }

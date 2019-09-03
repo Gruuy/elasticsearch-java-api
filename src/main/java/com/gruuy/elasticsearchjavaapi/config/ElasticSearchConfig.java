@@ -38,6 +38,7 @@ public class ElasticSearchConfig {
         return new RestHighLevelClient(restClientBuilder);
     }
     @Bean
+    @SuppressWarnings("all")
     public RestClientBuilder restClientBuilder(){
         RestClientBuilder builder= RestClient.builder(new HttpHost(hostName,port,scheme));
         //定义默认Headers，不用每个连接都带Headers

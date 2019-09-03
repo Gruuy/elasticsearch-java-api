@@ -64,4 +64,8 @@ public class TestController {
     public Msg update(){
         return msg.success().code(ConstUtil.SUCCESS_CODE).message(testService.update());
     }
+    @PostMapping("/delete")
+    public Msg delete() {
+        return msg.success( ).code(ConstUtil.SUCCESS_CODE).message(testService.delete( ));
+    }
 }

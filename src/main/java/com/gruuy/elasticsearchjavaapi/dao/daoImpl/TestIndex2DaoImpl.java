@@ -5,10 +5,13 @@ import com.gruuy.elasticsearchjavaapi.dao.TestIndex2Dao;
 import com.gruuy.elasticsearchjavaapi.entity.CreateIndex;
 import com.gruuy.elasticsearchjavaapi.entity.Test2Index;
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.admin.indices.close.CloseIndexRequest;
 import org.elasticsearch.action.admin.indices.open.OpenIndexRequest;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -33,7 +36,9 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.profile.ProfileResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextListener;
 
+import javax.servlet.ServletRequestEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -206,5 +211,37 @@ public class TestIndex2DaoImpl implements TestIndex2Dao {
             return "无需更新！";
         }
         return "失败！";
+    }
+
+    @Override
+    public String delete() {
+        DeleteRequest deleteRequest=new DeleteRequest("test2_index","_doc","101");
+        deleteRequest.timeout(TimeValue.timeValueSeconds(5));
+        DeleteResponse deleteResponse=null;
+        try {
+            //同步
+            deleteResponse=restHighLevelClient.delete(deleteRequest,RequestOptions.DEFAULT);
+            //异步
+            restHighLevelClient.deleteAsync(deleteRequest, RequestOptions.DEFAULT, new ActionListener<DeleteResponse>( ) {
+                @Override
+                public void onResponse(DeleteResponse deleteResponse) {
+                    System.out.println(deleteResponse.getResult() );
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    System.out.println("错误！"+e.getMessage() );
+                }
+            });
+        }catch (IOException e){
+            e.printStackTrace();
+        }catch (ElasticsearchException ex){
+            ex.printStackTrace();
+            return ex.getMessage();
+        }
+        if(deleteResponse.getResult()==DocWriteResponse.Result.DELETED){
+            return "删除成功！";
+        }
+        return "删除失败！";
     }
 }

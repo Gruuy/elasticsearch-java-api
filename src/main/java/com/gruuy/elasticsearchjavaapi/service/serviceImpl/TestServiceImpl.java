@@ -61,4 +61,9 @@ public class TestServiceImpl implements TestService {
     public String update() {
         return testIndex2Dao.update();
     }
+
+    @Override
+    public String delete() {
+        return testIndex2Dao.delete();
+    }
 }
